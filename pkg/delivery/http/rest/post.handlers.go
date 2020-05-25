@@ -1,8 +1,10 @@
 package rest
 
 import (
+	"gopkg.in/russross/blackfriday.v2"
 	"fmt"
-	"html"
+
+	// "html"
 	"net/http"
 	"strconv"
 	"strings"
@@ -13,22 +15,22 @@ import (
 )
 
 func sanitizePost(p *post.Post, s *Setup) {
-	// p.PostedByUsername = s.StrictSanitizer.Sanitize(p.PostedByUsername)
-	// p.OriginChannel = s.StrictSanitizer.Sanitize(p.OriginChannel)
-	// p.Title = s.StrictSanitizer.Sanitize(p.Title)
-	// p.Description = string(s.MarkupSanitizer.SanitizeBytes(
-	// 	blackfriday.Run(
-	// 		[]byte(p.Description),
-	// 		blackfriday.WithExtensions(blackfriday.CommonExtensions),
-	// 	),
-	// ))
-	// if p.Description == "<p></p>\n" {
-	// 	p.Description = ""
-	// }
-	p.PostedByUsername = html.EscapeString(p.PostedByUsername)
+	p.PostedByUsername = s.StrictSanitizer.Sanitize(p.PostedByUsername)
+	p.OriginChannel = s.StrictSanitizer.Sanitize(p.OriginChannel)
+	p.Title = s.StrictSanitizer.Sanitize(p.Title)
+	p.Description = string(s.MarkupSanitizer.SanitizeBytes(
+		blackfriday.Run(
+			[]byte(p.Description),
+			blackfriday.WithExtensions(blackfriday.CommonExtensions),
+		),
+	))
+	if p.Description == "<p></p>\n" {
+		p.Description = ""
+	}
+	/* p.PostedByUsername = html.EscapeString(p.PostedByUsername)
 	p.OriginChannel = html.EscapeString(p.OriginChannel)
 	p.Title = html.EscapeString(p.Title)
-	p.Description = html.EscapeString(p.Description)
+	p.Description = html.EscapeString(p.Description) */
 }
 
 // GET: /posts/:id ...getpost(id)
@@ -101,7 +103,7 @@ func postPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 					response.Data = jSendFailData{
 						ErrorReason: "request format",
 						ErrorMessage: `bad request, use format
-				{"PostedByUsername":"username len 5-22 chars",
+				{"postedByUsername":"username len 5-22 chars",
 				"originChannel":"channel",
 				"title":"title",
 				"description":"description"

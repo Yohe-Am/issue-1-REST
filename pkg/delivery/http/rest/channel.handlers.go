@@ -3,10 +3,11 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"html"
+	// "html"
 	"net/url"
-	"os"
 
+	"os"
+	// "github.com/microcosm-cc/bluemonday"
 	"github.com/slim-crown/issue-1-REST/pkg/services/domain/channel"
 	"github.com/slim-crown/issue-1-REST/pkg/services/domain/release"
 
@@ -17,12 +18,12 @@ import (
 )
 
 func sanitizeChannel(c *channel.Channel, s *Setup) {
-	// c.ChannelUsername = s.StrictSanitizer.Sanitize(c.ChannelUsername)
-	// c.Name = s.StrictSanitizer.Sanitize(c.Name)
-	// c.Description = s.StrictSanitizer.Sanitize(c.Description)
-	c.ChannelUsername = html.EscapeString(c.ChannelUsername)
-	c.Name = html.EscapeString(c.Name)
-	c.Description = html.EscapeString(c.Description)
+	c.ChannelUsername = s.StrictSanitizer.Sanitize(c.ChannelUsername)
+	c.Name = s.StrictSanitizer.Sanitize(c.Name)
+	c.Description = s.StrictSanitizer.Sanitize(c.Description)
+	// c.ChannelUsername = html.EscapeString(c.ChannelUsername)
+	// c.Name = html.EscapeString(c.Name)
+	// c.Description = html.EscapeString(c.Description)
 }
 
 // getChannel returns a handler for GET /channels/{channelUsername} requests

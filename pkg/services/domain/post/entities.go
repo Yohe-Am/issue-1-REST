@@ -6,7 +6,7 @@ import "time"
 // components such as stars, posting user and comments attached to the post
 type Post struct {
 	ID               uint            `json:"id"`
-	PostedByUsername string         `json:"PostedByUsername,omitempty"`
+	PostedByUsername string         `json:"postedByUsername,omitempty"`
 	OriginChannel    string         `json:"originChannel,omitempty"`
 	Title            string         `json:"title"`
 	Description      string         `json:"description"`

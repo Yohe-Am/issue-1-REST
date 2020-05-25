@@ -3,12 +3,13 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/channel"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/feed"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/slim-crown/issue-1-REST/pkg/services/domain/channel"
+	"github.com/slim-crown/issue-1-REST/pkg/services/domain/feed"
 )
 
 // getFeed returns a handler for GET /users/{username}/feed requests
@@ -81,7 +82,17 @@ func getFeedPosts(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 		limit := 25
 		offset := 0
 		sort := feed.NotSet
+		onlyPKeys := false
 		{ // this block reads the query strings if any
+
+			switch onlyPKeysQuery := r.URL.Query().Get("onlyPKeys"); onlyPKeysQuery {
+			case "false":
+			case "0":
+			case "":
+				break
+			default:
+				onlyPKeys = true
+			}
 			switch sortQuery := r.URL.Query().Get("sort"); sortQuery {
 			case "hot":
 				sort = feed.SortHot
@@ -120,16 +131,20 @@ func getFeedPosts(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			posts, err := s.FeedService.GetPosts(&f, sort, limit, offset)
 			switch err {
 			case nil:
-				response.Status = "success"
-				truePosts := make([]interface{}, 0)
-				for _, pID := range posts {
-					if temp, err := s.PostService.GetPost(uint(pID.ID)); err == nil {
-						truePosts = append(truePosts, temp)
-					} else {
-						truePosts = append(truePosts, pID)
+				if onlyPKeys {
+					response.Data = posts
+				} else {
+					response.Status = "success"
+					truePosts := make([]interface{}, 0)
+					for _, pID := range posts {
+						if temp, err := s.PostService.GetPost(uint(pID.ID)); err == nil {
+							truePosts = append(truePosts, temp)
+						} else {
+							truePosts = append(truePosts, pID)
+						}
 					}
+					response.Data = truePosts
 				}
-				response.Data = truePosts
 				s.Logger.Printf("success fetching posts for feed")
 			case feed.ErrFeedNotFound:
 				s.Logger.Printf("fetching of feed failed because: %v", err)

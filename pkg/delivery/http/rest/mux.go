@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/julienschmidt/httprouter"
 
 	"github.com/slim-crown/issue-1-REST/pkg/services/auth"
@@ -34,8 +35,8 @@ type Setup struct {
 
 // Dependencies contains dependencies used by the handlers.
 type Dependencies struct {
-	// StrictSanitizer *bluemonday.Policy
-	// MarkupSanitizer *bluemonday.Policy
+	StrictSanitizer *bluemonday.Policy
+	MarkupSanitizer *bluemonday.Policy
 	UserService    user.Service
 	FeedService    feed.Service
 	ChannelService channel.Service
@@ -92,7 +93,25 @@ func NewMux(s *Setup) *httprouter.Router {
 	secureRouter := httprouter.New()
 	secureRouter.HandleMethodNotAllowed = false
 
-	rootRouter.NotFound = ParseAuthTokenMiddleware(s)(mainRouter)
+	parseAuthMiddleware := ParseAuthTokenMiddleware(s)(mainRouter)
+
+	// CORS hack
+	rootRouter.NotFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// TODO: replace with rs/cors package
+
+		if r.Method == "OPTIONS"{
+			// s.Logger.Printf("OPTIONS request")
+			w.Header().Add("Access-Control-Allow-Origin", "*")
+			w.Header().Add("Vary", "Origin")	
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set(
+				"Access-Control-Allow-Headers",
+			 	"Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+			return;
+		}
+		parseAuthMiddleware.ServeHTTP(w,r);
+
+	})
 	mainRouter.NotFound = CheckForAuthMiddleware(s)(secureRouter)
 
 	fs := http.FileServer(http.Dir(s.ImageStoragePath))

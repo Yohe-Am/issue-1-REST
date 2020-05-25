@@ -7,9 +7,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"time"
 
+
+	"github.com/microcosm-cc/bluemonday"
+
 	"github.com/slim-crown/issue-1-REST/pkg/delivery/http/rest"
+	
 	"github.com/slim-crown/issue-1-REST/pkg/services/auth"
 	"github.com/slim-crown/issue-1-REST/pkg/services/domain/channel"
 	"github.com/slim-crown/issue-1-REST/pkg/services/domain/comment"
@@ -157,9 +162,9 @@ func main() {
 
 	setup.HostAddress += ":" + setup.Port
 
-	// setup.StrictSanitizer = bluemonday.StrictPolicy()
-	// setup.MarkupSanitizer = bluemonday.UGCPolicy()
-	// setup.MarkupSanitizer.AllowAttrs("class").Matching(regexp.MustCompile("^language-[a-zA-Z0-9]+$")).OnElements("code")
+	setup.StrictSanitizer = bluemonday.StrictPolicy()
+	setup.MarkupSanitizer = bluemonday.UGCPolicy()
+	setup.MarkupSanitizer.AllowAttrs("class").Matching(regexp.MustCompile("^language-[a-zA-Z0-9]+$")).OnElements("code")
 
 	setup.TokenSigningSecret = []byte("secret")
 	setup.TokenAccessLifetime = 15 * time.Minute
@@ -178,9 +183,6 @@ func main() {
 	}
 
 	mux := rest.NewMux(&setup)
-
-	setup.Logger.Printf("server running...")
-
 	// command line ui
 	go func() {
 		scanner := bufio.NewScanner(os.Stdin)
@@ -198,9 +200,11 @@ func main() {
 
 	if setup.HTTPS {
 		setup.HostAddress = "https://" + setup.HostAddress
+		setup.Logger.Printf("server running on %s", setup.HostAddress)
 		log.Fatal(http.ListenAndServeTLS(":"+setup.Port, "cmd/server/cert.pem", "cmd/server/key.pem", mux))
 	} else {
 		setup.HostAddress = "http://" + setup.HostAddress
+		setup.Logger.Printf("server running on %s", setup.HostAddress)
 		log.Fatal(http.ListenAndServe(":"+setup.Port, mux))
 	}
 

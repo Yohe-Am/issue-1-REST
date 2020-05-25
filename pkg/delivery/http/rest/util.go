@@ -1,18 +1,19 @@
 package rest
 
 import (
-	"crypto/rand"
-	"encoding/base64"
+	// "crypto/rand"
+	// "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/julienschmidt/httprouter"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
-	"time"
+	// "time"
 
-	mrand "math/rand"
+	"github.com/julienschmidt/httprouter"
+	"github.com/satori/go.uuid"
+	// mrand "math/rand"
 	"os"
 )
 
@@ -38,7 +39,7 @@ func getParametersFromRequestAsMap(r *http.Request) map[string]string {
 // writeResponseToWriter is a helper function.
 func writeResponseToWriter(response jSendResponse, w http.ResponseWriter, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Add("Access-Control-Allow-Origin", "http://localhost:8081")
+	w.Header().Add("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Vary", "Origin")
 	w.WriteHeader(statusCode)
 	encoder := json.NewEncoder(w)
@@ -74,10 +75,11 @@ func saveImageFromRequest(r *http.Request, fileName string) (*os.File, string, e
 }
 
 func generateFileNameForStorage(fileName, prefix string) string {
-	// v4uuid, _ := uuid.NewV4()
-	// return prefix + "." + v4uuid.String() + "." + fileName
-	entropy, _ := generateRandomString(20)
-	return prefix + "." + entropy + "." + fileName
+
+	v4uuid, _ := uuid.NewV4()
+	return prefix + "." + v4uuid.String() + "." + fileName
+	// entropy, _ := generateRandomString(20)
+	// return prefix + "." + entropy + "." + fileName
 }
 
 func checkIfFileIsAcceptedType(file multipart.File) error { // this block checks if image is of accepted types
@@ -117,7 +119,7 @@ func saveTempFilePermanentlyToPath(tmpFile *os.File, path string) error {
 	return nil
 }
 
-// GenerateRandomBytes returns securely generated random bytes.
+/* // GenerateRandomBytes returns securely generated random bytes.
 func generateRandomBytes(n int) ([]byte, error) {
 	mrand.Seed(time.Now().UnixNano())
 	b := make([]byte, n)
@@ -145,3 +147,4 @@ func generateRandomID(s int) string {
 	}
 	return string(b)
 }
+ */

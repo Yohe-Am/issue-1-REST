@@ -3,7 +3,7 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"html"
+	// "html"
 	"net/http"
 	"net/url"
 	"os"
@@ -12,22 +12,23 @@ import (
 	"strings"
 	"time"
 
+	// "github.com/microcosm-cc/bluemonday"
 	"github.com/slim-crown/issue-1-REST/pkg/services/domain/user"
 )
 
 func sanitizeUser(u *user.User, s *Setup) {
-	// u.Username = s.StrictSanitizer.Sanitize(u.Username)
-	// // TODO validate email
-	// u.FirstName = s.StrictSanitizer.Sanitize(u.FirstName)
-	// u.MiddleName = s.StrictSanitizer.Sanitize(u.MiddleName)
-	// u.LastName = s.StrictSanitizer.Sanitize(u.LastName)
-	// u.Bio = s.StrictSanitizer.Sanitize(u.Bio)
-	u.Username = html.EscapeString(u.Username)
+	u.Username = s.StrictSanitizer.Sanitize(u.Username)
+	// TODO validate email
+	u.FirstName = s.StrictSanitizer.Sanitize(u.FirstName)
+	u.MiddleName = s.StrictSanitizer.Sanitize(u.MiddleName)
+	u.LastName = s.StrictSanitizer.Sanitize(u.LastName)
+	u.Bio = s.StrictSanitizer.Sanitize(u.Bio)
+	/* u.Username = html.EscapeString(u.Username)
 	// TODO validate email
 	u.FirstName = html.EscapeString(u.FirstName)
 	u.MiddleName = html.EscapeString(u.MiddleName)
 	u.LastName = html.EscapeString(u.LastName)
-	u.Bio = html.EscapeString(u.Bio)
+	u.Bio = html.EscapeString(u.Bio) */
 
 }
 

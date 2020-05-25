@@ -3,24 +3,26 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"html"
+	// "html"
 	"net/http"
 	"strconv"
 
+	// "github.com/microcosm-cc/bluemonday"
+	"gopkg.in/russross/blackfriday.v2"
 	"github.com/slim-crown/issue-1-REST/pkg/services/domain/comment"
 )
 
 func sanitizeComment(c *comment.Comment, s *Setup) {
-	// c.Content = string(s.MarkupSanitizer.SanitizeBytes(
-	// 	blackfriday.Run(
-	// 		[]byte(c.Content),
-	// 		blackfriday.WithExtensions(blackfriday.CommonExtensions),
-	// 	),
-	// ))
-	// if c.Content == "<p></p>\n" {
-	// 	c.Content = ""
-	// }
-	c.Content = html.EscapeString(c.Content)
+	c.Content = string(s.MarkupSanitizer.SanitizeBytes(
+		blackfriday.Run(
+			[]byte(c.Content),
+			blackfriday.WithExtensions(blackfriday.CommonExtensions),
+		),
+	))
+	if c.Content == "<p></p>\n" {
+		c.Content = ""
+	}
+	// c.Content = html.EscapeString(c.Content)
 }
 
 // postComment returns a handler for POST /posts/{postID}/comments requests
