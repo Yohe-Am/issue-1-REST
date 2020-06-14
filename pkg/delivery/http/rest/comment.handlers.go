@@ -3,12 +3,12 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/comment"
+
 	// "html"
 	"net/http"
 	"strconv"
 
-	// "github.com/microcosm-cc/bluemonday"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/comment"
 	"gopkg.in/russross/blackfriday.v2"
 )
 

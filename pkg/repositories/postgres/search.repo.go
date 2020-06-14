@@ -3,7 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
-	"github.com/slim-crown/issue-1-REST/pkg/services/search"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/search"
 )
 
 type searchRepository repository

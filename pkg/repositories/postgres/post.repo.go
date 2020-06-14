@@ -3,8 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
-
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/post"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/post"
 )
 
 type postRepository repository

@@ -3,13 +3,12 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/channel"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/feed"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/channel"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/feed"
 )
 
 // getFeed returns a handler for GET /users/{username}/feed requests

@@ -3,10 +3,9 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/auth"
 	"net/http"
 	"time"
-
-	"github.com/slim-crown/issue-1-REST/pkg/services/auth"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"

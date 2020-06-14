@@ -3,8 +3,8 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/channel"
 	"github.com/lib/pq"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/channel"
 	"time"
 )
 

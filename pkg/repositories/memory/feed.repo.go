@@ -1,6 +1,8 @@
 package memory
 
-import "github.com/slim-crown/issue-1-REST/pkg/services/domain/feed"
+import (
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/feed"
+)
 
 //feedRepository ...
 type feedRepository struct {

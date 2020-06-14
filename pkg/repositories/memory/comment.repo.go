@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/comment"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/comment"
 )
 
 type commentRepository struct {

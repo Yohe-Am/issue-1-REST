@@ -4,6 +4,8 @@ import (
 	//"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/user"
+
 	//"io"
 
 	// "html"
@@ -14,9 +16,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	// "github.com/microcosm-cc/bluemonday"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/user"
 )
 
 func sanitizeUser(u *user.User, s *Setup) {

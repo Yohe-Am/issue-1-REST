@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/release"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/release"
 )
 
 //releaseRepository ...

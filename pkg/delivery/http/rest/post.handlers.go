@@ -2,6 +2,7 @@ package rest
 
 import (
 	"fmt"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/post"
 	"gopkg.in/russross/blackfriday.v2"
 
 	// "html"
@@ -10,8 +11,6 @@ import (
 	"strings"
 
 	"encoding/json"
-
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/post"
 )
 
 func sanitizePost(p *post.Post, s *Setup) {

@@ -4,6 +4,17 @@ import (
 	"bufio"
 	"database/sql"
 	"fmt"
+	"github.com/Yohe-Am/issue-1-REST/pkg/delivery/http/rest"
+	"github.com/Yohe-Am/issue-1-REST/pkg/repositories/memory"
+	"github.com/Yohe-Am/issue-1-REST/pkg/repositories/postgres"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/auth"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/channel"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/comment"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/feed"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/post"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/release"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/user"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/search"
 	"log"
 	"net/http"
 	"os"
@@ -11,20 +22,6 @@ import (
 	"time"
 
 	"github.com/microcosm-cc/bluemonday"
-
-	"github.com/slim-crown/issue-1-REST/pkg/delivery/http/rest"
-
-	"github.com/slim-crown/issue-1-REST/pkg/services/auth"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/channel"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/comment"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/feed"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/post"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/release"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/user"
-	"github.com/slim-crown/issue-1-REST/pkg/services/search"
-
-	"github.com/slim-crown/issue-1-REST/pkg/repositories/memory"
-	"github.com/slim-crown/issue-1-REST/pkg/repositories/postgres"
 
 	_ "github.com/lib/pq"
 )

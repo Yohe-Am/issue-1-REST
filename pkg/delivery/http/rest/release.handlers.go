@@ -3,14 +3,13 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/channel"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/release"
 	"net/http"
 	"net/url"
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/channel"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/release"
 )
 
 // postRelease returns a handler for POST /releases requests

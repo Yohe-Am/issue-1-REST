@@ -3,14 +3,13 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/channel"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/release"
 
 	// "html"
 	"net/url"
 
 	"os"
-	// "github.com/microcosm-cc/bluemonday"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/channel"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/release"
 
 	"strconv"
 	"strings"

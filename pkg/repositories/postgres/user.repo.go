@@ -3,12 +3,11 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/user"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 
 	"github.com/lib/pq"
-
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/user"
 )
 
 // userRepository ...

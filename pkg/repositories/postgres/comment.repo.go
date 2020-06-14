@@ -3,8 +3,8 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"github.com/Yohe-Am/issue-1-REST/pkg/services/domain/comment"
 	"github.com/lib/pq"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/comment"
 )
 
 type commentRepository repository
