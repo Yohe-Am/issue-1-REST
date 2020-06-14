@@ -9,3 +9,4 @@ echo -- enter "k" to stop the server.
 del .build\issue1REST.exe
 popd
 popd
+pause

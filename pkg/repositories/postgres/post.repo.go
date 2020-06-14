@@ -229,9 +229,7 @@ func (repo *postRepository) execUpdateStatementOnColumnIntoPost(column string, v
 	return nil
 }
 func (repo *postRepository) execUpdateStatementOnColumnIntoContents(column string, value []uint, id uint) error {
-	query := fmt.Sprintf(`UPDATE post_contents
-								SET %s = $1 
-								WHERE post_id = $2`, column)
+	query := `INSERT INTO post_contents values($2, $1);`
 	for _, v := range value {
 		_, err := repo.db.Exec(query, v, id)
 		if err != nil {

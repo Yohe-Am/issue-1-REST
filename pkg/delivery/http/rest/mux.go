@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/microcosm-cc/bluemonday"
 	"github.com/julienschmidt/httprouter"
+	"github.com/microcosm-cc/bluemonday"
 
 	"github.com/slim-crown/issue-1-REST/pkg/services/auth"
 	"github.com/slim-crown/issue-1-REST/pkg/services/search"
@@ -37,15 +37,15 @@ type Setup struct {
 type Dependencies struct {
 	StrictSanitizer *bluemonday.Policy
 	MarkupSanitizer *bluemonday.Policy
-	UserService    user.Service
-	FeedService    feed.Service
-	ChannelService channel.Service
-	ReleaseService release.Service
-	PostService    post.Service
-	CommentService comment.Service
-	SearchService  search.Service
-	AuthService    auth.Service
-	Logger         *log.Logger
+	UserService     user.Service
+	FeedService     feed.Service
+	ChannelService  channel.Service
+	ReleaseService  release.Service
+	PostService     post.Service
+	CommentService  comment.Service
+	SearchService   search.Service
+	AuthService     auth.Service
+	Logger          *log.Logger
 }
 
 // Config contains the different settings used to set up the handlers
@@ -97,19 +97,12 @@ func NewMux(s *Setup) *httprouter.Router {
 
 	// CORS hack
 	rootRouter.NotFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: replace with rs/cors package
-
-		if r.Method == "OPTIONS"{
+		if r.Method == "OPTIONS" {
 			// s.Logger.Printf("OPTIONS request")
-			w.Header().Add("Access-Control-Allow-Origin", "*")
-			w.Header().Add("Vary", "Origin")	
-			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-			w.Header().Set(
-				"Access-Control-Allow-Headers",
-			 	"Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-			return;
+			addCors(w)
+			return
 		}
-		parseAuthMiddleware.ServeHTTP(w,r);
+		parseAuthMiddleware.ServeHTTP(w, r)
 
 	})
 	mainRouter.NotFound = CheckForAuthMiddleware(s)(secureRouter)
@@ -206,7 +199,7 @@ func attachChannelRoutesToRouters(mainRouter, secureRouter *httprouter.Router, s
 	secureRouter.HandlerFunc("POST", "/channels/:channelUsername/catalogs}", postReleaseInCatalog(setup))
 	secureRouter.HandlerFunc("PUT", "/channels/:channelUsername/official/:releaseID", putReleaseInOfficialCatalog(setup))
 	mainRouter.HandlerFunc("GET", "/channels/:channelUsername/stickiedPosts", getStickiedPosts(setup))
-	secureRouter.HandlerFunc("PUT", "/channels/:channelUsername/Posts/:postID", stickyPost(setup))
+	secureRouter.HandlerFunc("PUT", "/channels/:channelUsername/stickiedPosts/:postID", stickyPost(setup))
 	secureRouter.HandlerFunc("DELETE", "/channels/:channelUsername/stickiedPosts/:stickiedPostID", deleteStickiedPost(setup))
 	secureRouter.HandlerFunc("PUT", "/channels/:channelUsername/picture", putChannelPicture(setup))
 	mainRouter.HandlerFunc("GET", "/channels/:channelUsername/picture", getChannelPicture(setup))

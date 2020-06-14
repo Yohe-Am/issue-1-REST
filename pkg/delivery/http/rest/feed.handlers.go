@@ -26,6 +26,7 @@ func getFeed(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 		{ // this block secures the route
 			if username != r.Header.Get("authorized_username") {
 				s.Logger.Printf("unauthorized user feed request")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
@@ -70,6 +71,7 @@ func getFeedPosts(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 		{ // this block secures the route
 			if username != r.Header.Get("authorized_username") {
 				s.Logger.Printf("unauthorized user feed request")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
@@ -131,10 +133,10 @@ func getFeedPosts(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			posts, err := s.FeedService.GetPosts(&f, sort, limit, offset)
 			switch err {
 			case nil:
+				response.Status = "success"
 				if onlyPKeys {
 					response.Data = posts
 				} else {
-					response.Status = "success"
 					truePosts := make([]interface{}, 0)
 					for _, pID := range posts {
 						if temp, err := s.PostService.GetPost(uint(pID.ID)); err == nil {
@@ -180,6 +182,7 @@ func getFeedChannels(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 		{ // this block secures the route
 			if username != r.Header.Get("authorized_username") {
 				s.Logger.Printf("unauthorized user feed request")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
@@ -267,6 +270,7 @@ func postFeedChannel(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 		{ // this block secures the route
 			if username != r.Header.Get("authorized_username") {
 				s.Logger.Printf("unauthorized user feed request")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
@@ -339,6 +343,7 @@ func putFeed(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 		{ // this block secures the route
 			if username != r.Header.Get("authorized_username") {
 				s.Logger.Printf("unauthorized user feed request")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
@@ -404,6 +409,7 @@ func deleteFeedChannel(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 		{ // this block secures the route
 			if username != r.Header.Get("authorized_username") {
 				s.Logger.Printf("unauthorized user feed request")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}

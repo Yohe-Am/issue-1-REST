@@ -1,8 +1,11 @@
 package rest
 
 import (
+	//"bytes"
 	"encoding/json"
 	"fmt"
+	//"io"
+
 	// "html"
 	"net/http"
 	"net/url"
@@ -308,6 +311,7 @@ func putUser(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if username != r.Header.Get("authorized_username") {
 				if _, err := s.UserService.GetUser(username); err == nil {
 					s.Logger.Printf("unauthorized update user attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 				}
@@ -447,7 +451,8 @@ func deleteUser(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 
 		{ // this block blocks user deletion of a user if is not the user herself accessing the route
 			if username != r.Header.Get("authorized_username") {
-				s.Logger.Printf("unauthorized update user attempt")
+				s.Logger.Printf("unauthorized delete user attempt")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
@@ -481,6 +486,7 @@ func getUserBookmarks(s *Setup) func(http.ResponseWriter, *http.Request) {
 		{ // this block blocks user deletion of a user if is not the user herself accessing the route
 			if username != r.Header.Get("authorized_username") {
 				s.Logger.Printf("unauthorized get user bookmarks request")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
@@ -538,6 +544,7 @@ func postUserBookmarks(s *Setup) func(http.ResponseWriter, *http.Request) {
 		{ // this block blocks user deletion of a user if is not the user herself accessing the route
 			if username != r.Header.Get("authorized_username") {
 				s.Logger.Printf("unauthorized post user bookmarks request")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
@@ -617,6 +624,7 @@ func putUserBookmarks(s *Setup) func(http.ResponseWriter, *http.Request) {
 		{ // this block secures the route
 			if username != r.Header.Get("authorized_username") {
 				s.Logger.Printf("unauthorized put user bookmarks request")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
@@ -676,6 +684,7 @@ func deleteUserBookmarks(s *Setup) func(http.ResponseWriter, *http.Request) {
 		{ // this block secures the route
 			if username != r.Header.Get("authorized_username") {
 				s.Logger.Printf("unauthorized delete bookmarks attempt")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
@@ -751,6 +760,14 @@ func getUserPicture(s *Setup) func(http.ResponseWriter, *http.Request) {
 // putUserPicture returns a handler for PUT /users/{username}/picture requests
 func putUserPicture(s *Setup) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		/*{
+			buf := new(bytes.Buffer)
+			_, _= io.Copy(buf, r.Body)
+			fmt.Printf("Body:\n %s", string(buf.Bytes()))
+		}
+		return
+		*/
+
 		var err error
 		var response jSendResponse
 		statusCode := http.StatusOK
@@ -762,6 +779,7 @@ func putUserPicture(s *Setup) func(http.ResponseWriter, *http.Request) {
 		{ // this block secures the route
 			if username != r.Header.Get("authorized_username") {
 				s.Logger.Printf("unauthorized user picture setting request")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
@@ -845,6 +863,7 @@ func deleteUserPicture(s *Setup) func(http.ResponseWriter, *http.Request) {
 		{ // this block blocks user deletion of a user if is not the user herself accessing the route
 			if username != r.Header.Get("authorized_username") {
 				s.Logger.Printf("unauthorized delete user picture attempt")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}

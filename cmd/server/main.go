@@ -10,11 +10,10 @@ import (
 	"regexp"
 	"time"
 
-
 	"github.com/microcosm-cc/bluemonday"
 
 	"github.com/slim-crown/issue-1-REST/pkg/delivery/http/rest"
-	
+
 	"github.com/slim-crown/issue-1-REST/pkg/services/auth"
 	"github.com/slim-crown/issue-1-REST/pkg/services/domain/channel"
 	"github.com/slim-crown/issue-1-REST/pkg/services/domain/comment"
@@ -156,7 +155,7 @@ func main() {
 	}
 
 	setup.ImageServingRoute = "/images/"
-	setup.ImageStoragePath = "data/images"
+	setup.ImageStoragePath = "data/images/"
 	setup.HostAddress = "localhost"
 	setup.Port = "8080"
 

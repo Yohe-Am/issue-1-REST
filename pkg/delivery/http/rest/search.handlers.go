@@ -85,11 +85,11 @@ func getSearch(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 		// if queries are clean
 		if response.Data == nil {
 			var responseData struct {
-				Posts    interface{} `json:"Posts"`
-				Releases interface{} `json:"Releases"`
-				Comments interface{} `json:"Comments"`
-				Channels interface{} `json:"Channels"`
-				Users    interface{} `json:"Users"`
+				Posts    interface{} `json:"posts"`
+				Releases interface{} `json:"releases"`
+				Comments interface{} `json:"comments"`
+				Channels interface{} `json:"channels"`
+				Users    interface{} `json:"users"`
 			}
 			order := string(sortOrder)
 			successCounter := 0

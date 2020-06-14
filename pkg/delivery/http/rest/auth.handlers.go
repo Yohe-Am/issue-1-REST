@@ -72,6 +72,7 @@ func CheckForAuthMiddleware(s *Setup) func(next http.Handler) http.Handler {
 				return
 			}
 			s.Logger.Printf("unauthenticated access attempt")
+			addCors(w)
 			w.WriteHeader(http.StatusUnauthorized)
 		})
 	}
@@ -159,7 +160,6 @@ func getTokenAuthRefresh(s *Setup) func(w http.ResponseWriter, r *http.Request) 
 		var response jSendResponse
 		statusCode := http.StatusOK
 		response.Status = "fail"
-
 		{ // this block secures the route
 			if isAuthenticated(r) {
 				// pass, all is good
@@ -167,6 +167,7 @@ func getTokenAuthRefresh(s *Setup) func(w http.ResponseWriter, r *http.Request) 
 				r.Header.Set("authorized_username", r.Header.Get("authorized_username_expired"))
 			} else {
 				s.Logger.Printf("unauthorized refresh request")
+				addCors(w)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}

@@ -9,10 +9,12 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+
 	// "time"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
+
 	// mrand "math/rand"
 	"os"
 )
@@ -39,8 +41,7 @@ func getParametersFromRequestAsMap(r *http.Request) map[string]string {
 // writeResponseToWriter is a helper function.
 func writeResponseToWriter(response jSendResponse, w http.ResponseWriter, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Add("Access-Control-Allow-Origin", "*")
-	w.Header().Add("Vary", "Origin")
+	addCors(w)
 	w.WriteHeader(statusCode)
 	encoder := json.NewEncoder(w)
 	encoder.SetIndent("", "\t\t")
@@ -48,6 +49,16 @@ func writeResponseToWriter(response jSendResponse, w http.ResponseWriter, status
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
+}
+
+func addCors(w http.ResponseWriter) {
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Vary", "Origin")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+	w.Header().Set(
+		"Access-Control-Allow-Headers",
+		// "*")
+		"Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }
 
 var errUnacceptedType = fmt.Errorf("file mime type not accepted")
@@ -72,14 +83,6 @@ func saveImageFromRequest(r *http.Request, fileName string) (*os.File, string, e
 		return nil, "", err
 	}
 	return newFile, header.Filename, nil
-}
-
-func generateFileNameForStorage(fileName, prefix string) string {
-
-	v4uuid, _ := uuid.NewV4()
-	return prefix + "." + v4uuid.String() + "." + fileName
-	// entropy, _ := generateRandomString(20)
-	// return prefix + "." + entropy + "." + fileName
 }
 
 func checkIfFileIsAcceptedType(file multipart.File) error { // this block checks if image is of accepted types
@@ -119,6 +122,14 @@ func saveTempFilePermanentlyToPath(tmpFile *os.File, path string) error {
 	return nil
 }
 
+func generateFileNameForStorage(fileName, prefix string) string {
+
+	v4uuid, _ := uuid.NewV4()
+	return prefix + "." + v4uuid.String() + "." + fileName
+	// entropy, _ := generateRandomString(20)
+	// return prefix + "." + entropy + "." + fileName
+}
+
 /* // GenerateRandomBytes returns securely generated random bytes.
 func generateRandomBytes(n int) ([]byte, error) {
 	mrand.Seed(time.Now().UnixNano())
@@ -147,4 +158,4 @@ func generateRandomID(s int) string {
 	}
 	return string(b)
 }
- */
+*/

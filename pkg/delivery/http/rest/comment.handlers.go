@@ -8,8 +8,8 @@ import (
 	"strconv"
 
 	// "github.com/microcosm-cc/bluemonday"
-	"gopkg.in/russross/blackfriday.v2"
 	"github.com/slim-crown/issue-1-REST/pkg/services/domain/comment"
+	"gopkg.in/russross/blackfriday.v2"
 )
 
 func sanitizeComment(c *comment.Comment, s *Setup) {
@@ -89,6 +89,7 @@ func postComment(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 				{ // this block secures the route
 					if c.Commenter != r.Header.Get("authorized_username") {
 						s.Logger.Printf("unauthorized post Comment request")
+						addCors(w)
 						w.WriteHeader(http.StatusUnauthorized)
 						return
 					}
@@ -376,11 +377,13 @@ func patchComment(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if temp, err := s.CommentService.GetComment(id); err == nil {
 				if temp.Commenter != r.Header.Get("authorized_username") {
 					s.Logger.Printf("unauthorized patch Comment request")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 				}
 			} else {
 				s.Logger.Printf("invalid delete comment request")
+				addCors(w)
 				w.WriteHeader(http.StatusNotFound)
 				return
 			}
@@ -478,11 +481,13 @@ func deleteComment(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if temp, err := s.CommentService.GetComment(id); err == nil {
 				if temp.Commenter != r.Header.Get("authorized_username") {
 					s.Logger.Printf("unauthorized patch Comment request")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 				}
 			} else {
 				s.Logger.Printf("invalid delete comment request")
+				addCors(w)
 				w.WriteHeader(http.StatusNotFound)
 				return
 			}

@@ -3,6 +3,7 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+
 	// "html"
 	"net/url"
 
@@ -197,6 +198,7 @@ func putChannel(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -211,6 +213,7 @@ func putChannel(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if one == false {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized update channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 
@@ -376,6 +379,7 @@ func deleteChannel(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -390,6 +394,7 @@ func deleteChannel(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if !one {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized delete channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 
@@ -428,6 +433,7 @@ func getAdmins(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -441,6 +447,7 @@ func getAdmins(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if one == false {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized get admins of channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 
@@ -491,6 +498,7 @@ func putAdmin(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -508,6 +516,7 @@ func putAdmin(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if one == false {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized update of channel admins attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 
@@ -567,6 +576,7 @@ func deleteAdmin(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -575,6 +585,7 @@ func deleteAdmin(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if adminUsername != r.Header.Get("authorized_username") {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized delete admins of channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 				}
@@ -629,6 +640,7 @@ func getOwner(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				s.Logger.Printf("c %s", channelUsername)
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -643,6 +655,7 @@ func getOwner(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if one == false {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized get owner of channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 
@@ -690,6 +703,7 @@ func putOwner(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -698,6 +712,7 @@ func putOwner(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 
 					s.Logger.Printf("unauthorized update owner of channel attempt %s")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 				}
@@ -757,6 +772,7 @@ func getCatalog(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -771,6 +787,7 @@ func getCatalog(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if one == false {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized get catalog of channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 
@@ -873,6 +890,7 @@ func deleteReleaseFromCatalog(s *Setup) func(w http.ResponseWriter, r *http.Requ
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -887,6 +905,7 @@ func deleteReleaseFromCatalog(s *Setup) func(w http.ResponseWriter, r *http.Requ
 			if one == false {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized delete release of channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 
@@ -937,6 +956,8 @@ func deleteReleaseFromCatalog(s *Setup) func(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+// TODO: remove release from official catalog
+
 // deleteReleaseFromOfficialCatalog returns a handler for DELETE /channels/{channelUsername}/official/{catalogID}
 func deleteReleaseFromOfficialCatalog(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -951,6 +972,7 @@ func deleteReleaseFromOfficialCatalog(s *Setup) func(w http.ResponseWriter, r *h
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -964,6 +986,7 @@ func deleteReleaseFromOfficialCatalog(s *Setup) func(w http.ResponseWriter, r *h
 			if one == false {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized delete release of channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 
@@ -1027,6 +1050,7 @@ func getReleaseFromCatalog(s *Setup) func(w http.ResponseWriter, r *http.Request
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -1041,6 +1065,7 @@ func getReleaseFromCatalog(s *Setup) func(w http.ResponseWriter, r *http.Request
 			if one == false {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized get release of catalog of channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 
@@ -1058,34 +1083,35 @@ func getReleaseFromCatalog(s *Setup) func(w http.ResponseWriter, r *http.Request
 
 		} else {
 			c, err := s.ChannelService.GetChannel(channelUsername)
-
 			switch err {
 			case nil:
+				found := false
 				for i := 0; i < len(c.ReleaseIDs); i++ {
 					if c.ReleaseIDs[i] == uint(ReleaseID) {
-						response.Status = "success"
-						catalog := ReleaseID
-						releases := make([]interface{}, 0)
-						temp, err := s.ReleaseService.GetRelease(catalog)
-						if err == nil {
-							releases = append(releases, temp)
+						found = true
 
+						temp, err := s.ReleaseService.GetRelease(ReleaseID)
+						if err != nil {
+							s.Logger.Printf("fetching of catalog of channel failed because: %s", err.Error())
+							statusCode = http.StatusInternalServerError
+							response.Data = jSendFailData{
+								ErrorReason:  "error",
+								ErrorMessage: "server error when fetching catalog of channel",
+							}
 						} else {
-							releases = append(releases, catalog)
-							s.Logger.Printf(err.Error())
+							response.Status = "success"
+							response.Data = temp
+							s.Logger.Printf("success fetching release of  catalog of channel %s", channelUsername)
 						}
-
-						response.Data = releases
-
-						s.Logger.Printf("success fetching release of  catalog of channel %s", channelUsername)
-					} else {
-						response.Data = jSendFailData{
-							ErrorReason:  "releaseID",
-							ErrorMessage: "release doesn't exits",
-						}
-						statusCode = http.StatusNotFound
-
+						break
 					}
+				}
+				if !found {
+					response.Data = jSendFailData{
+						ErrorReason:  "releaseID",
+						ErrorMessage: "release not found in catalog",
+					}
+					statusCode = http.StatusNotFound
 				}
 			case channel.ErrChannelNotFound:
 				s.Logger.Printf("fetch attempt of catalog from non existent channel %s", channelUsername)
@@ -1098,7 +1124,7 @@ func getReleaseFromCatalog(s *Setup) func(w http.ResponseWriter, r *http.Request
 				s.Logger.Printf("fetching of catalog of channel failed because: %s", err.Error())
 				response.Data = jSendFailData{
 					ErrorReason:  "error",
-					ErrorMessage: "server error when fetching catalog of channel",
+					ErrorMessage: "server error when fetching from catalog of channel",
 				}
 				statusCode = http.StatusInternalServerError
 			}
@@ -1131,29 +1157,33 @@ func getReleaseFromOfficialCatalog(s *Setup) func(w http.ResponseWriter, r *http
 
 			switch err {
 			case nil:
-				for i := 0; i < len(c.OfficialReleaseIDs); i++ {
+				found := false
+				for i := 0; i < len(c.ReleaseIDs); i++ {
 					if c.OfficialReleaseIDs[i] == uint(ReleaseID) {
-						response.Status = "success"
-						catalog := ReleaseID
-						releases := make([]interface{}, 0)
-						temp, err := s.ReleaseService.GetRelease(catalog)
-						if err == nil {
-							releases = append(releases, temp)
+						found = true
+
+						temp, err := s.ReleaseService.GetRelease(ReleaseID)
+						if err != nil {
+							s.Logger.Printf("fetching of catalog of channel failed because: %s", err.Error())
+							statusCode = http.StatusInternalServerError
+							response.Data = jSendFailData{
+								ErrorReason:  "error",
+								ErrorMessage: "server error when fetching release from official catalog of channel",
+							}
 						} else {
-							releases = append(releases, catalog)
-							s.Logger.Printf(err.Error())
+							response.Status = "success"
+							response.Data = temp
+							s.Logger.Printf("success fetching release of  official catalog of channel %s", channelUsername)
 						}
-
-						response.Data = releases
-						s.Logger.Printf("success fetching release of  official catalog of channel %s", channelUsername)
-					} else {
-						response.Data = jSendFailData{
-							ErrorReason:  "releaseID",
-							ErrorMessage: "release doesn't exits",
-						}
-						statusCode = http.StatusNotFound
-
+						break
 					}
+				}
+				if !found {
+					response.Data = jSendFailData{
+						ErrorReason:  "releaseID",
+						ErrorMessage: "release not found in catalog",
+					}
+					statusCode = http.StatusNotFound
 				}
 			case channel.ErrChannelNotFound:
 				s.Logger.Printf("fetch attempt of catalog from non existent channel %s", channelUsername)
@@ -1263,6 +1293,7 @@ func putReleaseInCatalog(d *Setup) func(w http.ResponseWriter, r *http.Request) 
 					}
 					if !found {
 						d.Logger.Printf("Channel %s not found", rel.OwnerChannel)
+						addCors(w)
 						w.WriteHeader(http.StatusForbidden)
 						return
 					}
@@ -1372,12 +1403,14 @@ func postReleaseInCatalog(s *Setup) func(w http.ResponseWriter, r *http.Request)
 					}
 					if !found {
 						s.Logger.Printf("unauthorized post release of channel attempt")
+						addCors(w)
 						w.WriteHeader(http.StatusUnauthorized)
 						return
 					}
 				} else {
 
 					s.Logger.Printf("Channel %s not found", newRelease.OwnerChannel)
+					addCors(w)
 					w.WriteHeader(http.StatusForbidden)
 					return
 
@@ -1481,12 +1514,14 @@ func putReleaseInOfficialCatalog(s *Setup) func(w http.ResponseWriter, r *http.R
 				}
 				if !found {
 					s.Logger.Printf("unauthorized delete release of channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 				}
 			} else {
 
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -1566,8 +1601,10 @@ func getChannelPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		var response jSendResponse
+
 		response.Status = "fail"
 		statusCode := http.StatusOK
+
 		vars := getParametersFromRequestAsMap(r)
 		channelUsername := vars["channelUsername"]
 		c, err := s.ChannelService.GetChannel(channelUsername)
@@ -1578,12 +1615,11 @@ func getChannelPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 				ErrorMessage: "bad request, postID must be an integer",
 			}
 			statusCode = http.StatusBadRequest
-
 		} else {
 			switch err {
 			case nil:
+				found := false
 				for i := 0; i < len(c.PostIDs); i++ {
-
 					if c.PostIDs[i] == uint(postID) {
 						response.Status = "success"
 						postid := postID
@@ -1591,20 +1627,20 @@ func getChannelPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 						if temp, err := s.PostService.GetPost(uint(postID)); err == nil {
 							response.Data = temp
 						} else {
-
 							response.Data = postid
 						}
 
 						s.Logger.Printf("success fetching post of channel %s", channelUsername)
+						found = true
 						break
-					} else {
-						response.Data = jSendFailData{
-							ErrorReason:  "postID",
-							ErrorMessage: "post doesn't exits",
-						}
-						statusCode = http.StatusNotFound
-
 					}
+				}
+				if !found {
+					response.Data = jSendFailData{
+						ErrorReason:  "postID",
+						ErrorMessage: "post doesn't exits",
+					}
+					statusCode = http.StatusNotFound
 				}
 			case channel.ErrChannelNotFound:
 				s.Logger.Printf("fetch attempt of post from non existent channel %s", channelUsername)
@@ -1693,19 +1729,14 @@ func getStickiedPosts(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			posts := make([]interface{}, 0)
 
 			for _, pID := range postID {
-
 				if temp, err := s.PostService.GetPost(pID); err == nil {
-					fmt.Printf("here12")
 					posts = append(posts, temp)
 				} else {
-					fmt.Printf("here")
 					posts = append(posts, pID)
 				}
 			}
-			fmt.Printf("here13")
 			response.Data = posts
 			s.Logger.Printf("success fetching post of channel %s", channelUsername)
-
 		case channel.ErrChannelNotFound:
 			s.Logger.Printf("fetch attempt of post from non existent channel %s", channelUsername)
 			response.Data = jSendFailData{
@@ -1739,6 +1770,7 @@ func deleteStickiedPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -1753,6 +1785,7 @@ func deleteStickiedPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if one == false {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized delete stickied post of channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 
@@ -1800,7 +1833,7 @@ func deleteStickiedPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// stickyPost returns a handler for PUT /channels/{channelUsername}/Posts/{postID}
+// stickyPost returns a handler for PUT /channels/{channelUsername}/stickiedPosts/{postID}
 func stickyPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var response jSendResponse
@@ -1813,6 +1846,7 @@ func stickyPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -1827,6 +1861,7 @@ func stickyPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if one == false {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized sticky a post in channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 
@@ -1939,6 +1974,7 @@ func putChannelPicture(s *Setup) func(http.ResponseWriter, *http.Request) {
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -1953,6 +1989,7 @@ func putChannelPicture(s *Setup) func(http.ResponseWriter, *http.Request) {
 			if one == false {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized sticky a post in channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 
@@ -1969,7 +2006,7 @@ func putChannelPicture(s *Setup) func(http.ResponseWriter, *http.Request) {
 				defer os.Remove(tmpFile.Name())
 				defer tmpFile.Close()
 				s.Logger.Printf("temp file saved: %s", tmpFile.Name())
-				fileName = generateFileNameForStorage(fileName, "user")
+				fileName = generateFileNameForStorage(fileName, "channel")
 			case errUnacceptedType:
 				response.Data = jSendFailData{
 					ErrorMessage: "image",
@@ -2039,6 +2076,7 @@ func deleteChannelPicture(s *Setup) func(http.ResponseWriter, *http.Request) {
 			c, err := s.ChannelService.GetChannel(channelUsername)
 			if err != nil {
 				s.Logger.Printf("Channel %s not found", channelUsername)
+				addCors(w)
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
@@ -2053,6 +2091,7 @@ func deleteChannelPicture(s *Setup) func(http.ResponseWriter, *http.Request) {
 			if one == false {
 				if _, err := s.ChannelService.GetChannel(channelUsername); err == nil {
 					s.Logger.Printf("unauthorized sticky a post in channel attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 

@@ -78,8 +78,7 @@ func (repo releaseRepository) SearchRelease(pattern string, by release.SortBy, o
 				         NATURAL JOIN
 				     (
 				         SELECT release_id
-		FROM "issue#1".channel_official_catalog
-		WHERE channel_username )
+						FROM "issue#1".channel_official_catalog
 				     ) AS "coc*"
 				ORDER BY %s %s NULLS LAST
 				LIMIT $1 OFFSET $2`, by, order)

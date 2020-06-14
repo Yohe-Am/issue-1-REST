@@ -3,13 +3,14 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/channel"
-	"github.com/slim-crown/issue-1-REST/pkg/services/domain/release"
 	"net/http"
 	"net/url"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/slim-crown/issue-1-REST/pkg/services/domain/channel"
+	"github.com/slim-crown/issue-1-REST/pkg/services/domain/release"
 )
 
 // postRelease returns a handler for POST /releases requests
@@ -59,6 +60,7 @@ func postRelease(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 							}
 							if !isAdmin {
 								s.Logger.Printf("unauthorized add release request")
+								addCors(w)
 								w.WriteHeader(http.StatusUnauthorized)
 								return
 							}
@@ -362,7 +364,7 @@ func patchRelease(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 
 		id, err := strconv.Atoi(idRaw)
 		if err != nil {
-			s.Logger.Printf("put attempt of non invalid release id %s", idRaw)
+			s.Logger.Printf("patch attempt on non invalid release id %s", idRaw)
 			response.Data = jSendFailData{
 				ErrorReason:  "releaseID",
 				ErrorMessage: fmt.Sprintf("invalid releaseID %s", idRaw),
@@ -373,155 +375,154 @@ func patchRelease(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			temp, err := s.ReleaseService.GetRelease(id)
 			switch err {
 			case nil:
-				{ // this block secure the route
-					c, err := s.ChannelService.GetChannel(temp.OwnerChannel)
-					switch err {
-					case nil:
-						isAdmin := false
-						for _, admin := range c.AdminUsernames {
-							if r.Header.Get("authorized_username") == admin {
-								isAdmin = true
-								break
-							}
+				c, err := s.ChannelService.GetChannel(temp.OwnerChannel)
+				switch err {
+				case nil:
+					isAdmin := false
+					for _, admin := range c.AdminUsernames {
+						if r.Header.Get("authorized_username") == admin {
+							isAdmin = true
+							break
 						}
-						if !isAdmin {
-							s.Logger.Printf("unauthorized add release request")
-							w.WriteHeader(http.StatusUnauthorized)
-							return
-						}
-
-						rel := new(release.Release)
-						var tmpFile *os.File
-						{ // this block parses the JSON part of the request
-							err := json.Unmarshal([]byte(r.PostFormValue("JSON")), rel)
+					}
+					if !isAdmin {
+						s.Logger.Printf("unauthorized add release request")
+						addCors(w)
+						w.WriteHeader(http.StatusUnauthorized)
+						return
+					}
+					rel := new(release.Release)
+					var tmpFile *os.File
+					{ // this block parses the JSON part of the request
+						err := json.Unmarshal([]byte(r.PostFormValue("JSON")), rel)
+						if err != nil {
+							err = json.NewDecoder(r.Body).Decode(rel)
 							if err != nil {
-								err = json.NewDecoder(r.Body).Decode(rel)
-								if err != nil {
-									// TODO send back format
-									response.Data = jSendFailData{
-										ErrorReason:  "message",
-										ErrorMessage: "use multipart for for posting Image Releases. A part named 'JSON' for Release data \r\nand a file called 'image' if release is of image type JPG/PNG.",
-									}
-									statusCode = http.StatusBadRequest
+								// TODO send back format
+								response.Data = jSendFailData{
+									ErrorReason:  "message",
+									ErrorMessage: "use multipart for for posting Image Releases. A part named 'JSON' for Release data \r\nand a file called 'image' if release is of image type JPG/PNG.",
 								}
-							} else {
-								{ // this block extracts the image file if necessary
-									switch rel.Type {
-									case release.Text:
-									case release.Image:
-										fallthrough
-									default:
-										var fileName string
-										var err error
-										tmpFile, fileName, err = saveImageFromRequest(r, "image")
-										switch err {
-										case nil:
-											s.Logger.Printf("image found on put request")
-											defer os.Remove(tmpFile.Name())
-											defer tmpFile.Close()
-											s.Logger.Printf(fmt.Sprintf("temp file saved: %s", tmpFile.Name()))
-											rel.Content = generateFileNameForStorage(fileName, "release")
-											rel.Type = release.Image
-										case errUnacceptedType:
+								statusCode = http.StatusBadRequest
+							}
+						} else {
+							{ // this block extracts the image file if necessary
+								switch rel.Type {
+								case release.Text:
+								case release.Image:
+									fallthrough
+								default:
+									var fileName string
+									var err error
+									tmpFile, fileName, err = saveImageFromRequest(r, "image")
+									switch err {
+									case nil:
+										s.Logger.Printf("image found on put request")
+										defer os.Remove(tmpFile.Name())
+										defer tmpFile.Close()
+										s.Logger.Printf(fmt.Sprintf("temp file saved: %s", tmpFile.Name()))
+										rel.Content = generateFileNameForStorage(fileName, "release")
+										rel.Type = release.Image
+									case errUnacceptedType:
+										response.Data = jSendFailData{
+											ErrorMessage: "image-type",
+											ErrorReason:  "only types image/jpeg & image/png are accepted",
+										}
+										statusCode = http.StatusBadRequest
+									case errReadingFromImage:
+										s.Logger.Printf("image not found on put request")
+										if rel.Type == release.Image {
 											response.Data = jSendFailData{
-												ErrorMessage: "image-type",
-												ErrorReason:  "only types image/jpeg & image/png are accepted",
+												ErrorReason:  "image",
+												ErrorMessage: "unable to read image file\nuse multipart-form for for posting Image Releases. A part named 'JSON' for Release data \nand a file called 'image' of image type JPG/PNG.",
 											}
 											statusCode = http.StatusBadRequest
-										case errReadingFromImage:
-											s.Logger.Printf("image not found on put request")
-											if rel.Type == release.Image {
-												response.Data = jSendFailData{
-													ErrorReason:  "image",
-													ErrorMessage: "unable to read image file\nuse multipart-form for for posting Image Releases. A part named 'JSON' for Release data \nand a file called 'image' of image type JPG/PNG.",
-												}
-												statusCode = http.StatusBadRequest
-											}
-										default:
-											response.Status = "error"
-											response.Message = "server error when adding release"
-											statusCode = http.StatusInternalServerError
 										}
+									default:
+										response.Status = "error"
+										response.Message = "server error when adding release"
+										statusCode = http.StatusInternalServerError
 									}
 								}
 							}
 						}
-						// if JSON parsing doesn't fail
+					}
+					// if JSON parsing doesn't fail
+					if response.Data == nil {
+						if rel.Content == "" && rel.Title == "" && rel.GenreDefining == "" &&
+							rel.Description == "" && len(rel.Genres) == 0 && len(rel.Authors) == 0 &&
+							rel.OwnerChannel == "" {
+							//no patchable data found
+							rel, err = s.ReleaseService.GetRelease(id)
+							switch err {
+							case nil:
+								s.Logger.Printf("success patch release at id %d: no new data found on request", id)
+								response.Status = "success"
+								if rel.Type == release.Image {
+									rel.Content = s.HostAddress + s.ImageServingRoute + url.PathEscape(rel.Content)
+								}
+								response.Data = *rel
+							default:
+								s.Logger.Printf("update of user failed because: %v", err)
+								response.Status = "error"
+								response.Message = "server error when updating user"
+								statusCode = http.StatusInternalServerError
+							}
+						}
 						if response.Data == nil {
-							if rel.Content == "" && rel.Title == "" && rel.GenreDefining == "" &&
-								rel.Description == "" && len(rel.Genres) == 0 && len(rel.Authors) == 0 &&
-								rel.OwnerChannel == "" {
-								//no patchable data found
-								rel, err = s.ReleaseService.GetRelease(id)
-								switch err {
-								case nil:
-									s.Logger.Printf("success put release at id %d", id)
+							rel.ID = id
+							rel, err = s.ReleaseService.UpdateRelease(rel)
+							switch err {
+							case nil:
+								if rel.Type == release.Image {
+									err := saveTempFilePermanentlyToPath(tmpFile, s.ImageStoragePath+rel.Content)
+									if err != nil {
+										s.Logger.Printf("updating of release failed because: %v", err)
+										response.Status = "error"
+										response.Message = "server error when updating release"
+										statusCode = http.StatusInternalServerError
+										_ = s.ReleaseService.DeleteRelease(rel.ID)
+									}
+								}
+								if response.Message == "" {
+									s.Logger.Printf("success updating release %d", id)
 									response.Status = "success"
 									if rel.Type == release.Image {
 										rel.Content = s.HostAddress + s.ImageServingRoute + url.PathEscape(rel.Content)
 									}
 									response.Data = *rel
-								default:
-									s.Logger.Printf("update of user failed because: %v", err)
-									response.Status = "error"
-									response.Message = "server error when updating user"
-									statusCode = http.StatusInternalServerError
+									// TODO delete old image if image updated
 								}
-							}
-							if response.Data == nil {
-								rel.ID = id
-								rel, err = s.ReleaseService.UpdateRelease(rel)
-								switch err {
-								case nil:
-									if rel.Type == release.Image {
-										err := saveTempFilePermanentlyToPath(tmpFile, s.ImageStoragePath+rel.Content)
-										if err != nil {
-											s.Logger.Printf("updating of release failed because: %v", err)
-											response.Status = "error"
-											response.Message = "server error when updating release"
-											statusCode = http.StatusInternalServerError
-											_ = s.ReleaseService.DeleteRelease(rel.ID)
-										}
-									}
-									if response.Message == "" {
-										s.Logger.Printf("success updating release %d", id)
-										response.Status = "success"
-										if rel.Type == release.Image {
-											rel.Content = s.HostAddress + s.ImageServingRoute + url.PathEscape(rel.Content)
-										}
-										response.Data = *rel
-										// TODO delete old image if image updated
-									}
-								case release.ErrAttemptToChangeReleaseType:
-									s.Logger.Printf("update attempt of release type for release %d", id)
-									response.Data = jSendFailData{
-										ErrorReason:  "type",
-										ErrorMessage: "release type cannot be changed",
-									}
-									statusCode = http.StatusNotFound
-								case release.ErrSomeReleaseDataNotPersisted:
-									fallthrough
-								default:
-									s.Logger.Printf("update of release failed because: %v", err)
-									response.Status = "error"
-									response.Message = "server error when adding release"
-									statusCode = http.StatusInternalServerError
+							case release.ErrAttemptToChangeReleaseType:
+								s.Logger.Printf("update attempt of release type for release %d", id)
+								response.Data = jSendFailData{
+									ErrorReason:  "type",
+									ErrorMessage: "release type cannot be changed",
 								}
+								statusCode = http.StatusNotFound
+							case release.ErrSomeReleaseDataNotPersisted:
+								fallthrough
+							default:
+								s.Logger.Printf("update of release failed because: %v", err)
+								response.Status = "error"
+								response.Message = "server error when adding release"
+								statusCode = http.StatusInternalServerError
 							}
 						}
-					case channel.ErrChannelNotFound:
-						s.Logger.Printf("replease post attempt on non-existent channel %s", temp.OwnerChannel)
-						response.Data = jSendFailData{
-							ErrorReason:  "ownerChannel",
-							ErrorMessage: fmt.Sprintf("channel of channelUsername %s not found", temp.OwnerChannel),
-						}
-						statusCode = http.StatusNotFound
-					default:
-						s.Logger.Printf("patching of release failed during auth because: %v", err)
-						response.Status = "error"
-						response.Message = "server error when adding release"
 					}
+				case channel.ErrChannelNotFound:
+					s.Logger.Printf("replease post attempt on non-existent channel %s", temp.OwnerChannel)
+					response.Data = jSendFailData{
+						ErrorReason:  "ownerChannel",
+						ErrorMessage: fmt.Sprintf("channel of channelUsername %s not found", temp.OwnerChannel),
+					}
+					statusCode = http.StatusNotFound
+				default:
+					s.Logger.Printf("patching of release failed during auth because: %v", err)
+					response.Status = "error"
+					response.Message = "server error when adding release"
 				}
+
 			case release.ErrReleaseNotFound:
 				s.Logger.Printf("update attempt of non existing release %s", idRaw)
 				response.Data = jSendFailData{
@@ -574,6 +575,7 @@ func deleteRelease(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 						}
 						if !isAdmin {
 							s.Logger.Printf("unauthorized add release request")
+							addCors(w)
 							w.WriteHeader(http.StatusUnauthorized)
 							return
 						}

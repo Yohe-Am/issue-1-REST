@@ -1,8 +1,8 @@
 package rest
 
 import (
-	"gopkg.in/russross/blackfriday.v2"
 	"fmt"
+	"gopkg.in/russross/blackfriday.v2"
 
 	// "html"
 	"net/http"
@@ -146,6 +146,7 @@ func postPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			{ // this block secures the route
 				if newPost.PostedByUsername != r.Header.Get("authorized_username") {
 					s.Logger.Printf("unauthorized update post attempt")
+					addCors(w)
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 				}
@@ -161,12 +162,14 @@ func postPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 						}
 						if !posterFound{
 							s.Logger.Printf("unauthorized update post attempt")
+														addCors(w)
 							w.WriteHeader(http.StatusUnauthorized)
 							return
 						}
 
 					}else{
 						s.Logger.Printf("bad update post request")
+												addCors(w)
 						w.WriteHeader(http.StatusBadRequest)
 						return
 					}*/
@@ -226,6 +229,7 @@ func putPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 				if err == nil {
 					if x.PostedByUsername != r.Header.Get("authorized_username") {
 						s.Logger.Printf("unauthorized update post attempt")
+						addCors(w)
 						w.WriteHeader(http.StatusUnauthorized)
 						return
 					}
@@ -241,17 +245,20 @@ func putPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 							}
 							if !posterFound{
 								s.Logger.Printf("unauthorized update post attempt")
+																addCors(w)
 								w.WriteHeader(http.StatusUnauthorized)
 								return
 							}
 						}else{
 							s.Logger.Printf("bad update post request")
+														addCors(w)
 							w.WriteHeader(http.StatusBadRequest)
 							return
 						}
 					*/
 				} else {
 					s.Logger.Printf("invalid update post request")
+					addCors(w)
 					w.WriteHeader(http.StatusNotFound)
 					return
 				}
@@ -276,7 +283,7 @@ func putPost(s *Setup) func(w http.ResponseWriter, r *http.Request) {
 			if response.Data == nil {
 				// if JSON parsing doesn't fail
 
-				if newPost.PostedByUsername == "" && newPost.OriginChannel == "" && newPost.Title == "" && newPost.Description == "" {
+				if newPost.PostedByUsername == "" && newPost.OriginChannel == "" && newPost.Title == "" && newPost.Description == "" && len(newPost.ContentsID) == 0 {
 					response.Data = jSendFailData{
 						ErrorReason:  "request",
 						ErrorMessage: "request doesn't contain updatable data",
@@ -340,6 +347,7 @@ func deletePost(d *Setup) func(w http.ResponseWriter, r *http.Request) {
 				if err == nil {
 					if x.PostedByUsername != r.Header.Get("authorized_username") {
 						d.Logger.Printf("unauthorized update post attempt")
+						addCors(w)
 						w.WriteHeader(http.StatusUnauthorized)
 						return
 					}
@@ -355,17 +363,20 @@ func deletePost(d *Setup) func(w http.ResponseWriter, r *http.Request) {
 							}
 							if !posterFound{
 								d.Logger.Printf("unauthorized update post attempt")
+																addCors(w)
 								w.WriteHeader(http.StatusUnauthorized)
 								return
 							}
 						}else{
 							d.Logger.Printf("bad update post request")
+														addCors(w)
 							w.WriteHeader(http.StatusBadRequest)
 							return
 						}
 					*/
 				} else {
 					d.Logger.Printf("invalid update post request")
+					addCors(w)
 					w.WriteHeader(http.StatusNotFound)
 					return
 				}
@@ -747,6 +758,7 @@ func putPostStar(s *Setup) func(http.ResponseWriter, *http.Request) {
 				{ // this block secures the route
 					if username != r.Header.Get("authorized_username") {
 						s.Logger.Printf("unauthorized post Star request")
+						addCors(w)
 						w.WriteHeader(http.StatusUnauthorized)
 						return
 					}
